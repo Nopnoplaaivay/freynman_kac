@@ -1,0 +1,24 @@
+# IDE
+.idea
+
+# venv
+venv
+
+# config
+.env
+*.ini
+
+# cpython
+*__pycache__*
+
+# python
+tempCodeRunnerFile.py
+
+# tmp
+tmp/
+
+# test
+test/
+
+# notebooks
+docs/
