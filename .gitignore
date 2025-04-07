@@ -16,6 +16,7 @@ tempCodeRunnerFile.py
 
 # tmp
 tmp/
+*.csv
 
 # test
 test/
