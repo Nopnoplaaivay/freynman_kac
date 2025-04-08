@@ -23,3 +23,6 @@ test/
 
 # notebooks
 docs/
+
+# weights
+weights/

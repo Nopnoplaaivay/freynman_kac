@@ -25,9 +25,9 @@ METHODS = {
     "Method of Lines": method_of_lines_price,
     "Spectral Method": spectral_method_price,
     "Finite Elements": fem_price,
-    "Deep Ritz": deep_ritz_price,  
-    "DeepONet": deeponet_price,
-    "Fourier Neural Operator": fourier_neural_operator_price,
+    # "Deep Ritz": deep_ritz_price,  
+    # "DeepONet": deeponet_price,
+    # "Fourier Neural Operator": fourier_neural_operator_price,
     "Quantum Simulation": quantum_price_simulation  
 }
 
