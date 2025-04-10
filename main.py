@@ -1,4 +1,3 @@
-import asyncio
 import numpy as np
 import pandas as pd
 import time
@@ -20,15 +19,15 @@ from src.methods import (
 )
 
 METHODS = {
-    "Monte Carlo": monte_carlo_price,
-    "Finite Difference": finite_difference_price,
-    "Method of Lines": method_of_lines_price,
+    # "Monte Carlo": monte_carlo_price,
+    # "Finite Difference": finite_difference_price,
+    # "Method of Lines": method_of_lines_price,
     "Spectral Method": spectral_method_price,
-    "Finite Elements": fem_price,
+    # "Finite Elements": fem_price,
     # "Deep Ritz": deep_ritz_price,  
     # "DeepONet": deeponet_price,
     # "Fourier Neural Operator": fourier_neural_operator_price,
-    "Quantum Simulation": quantum_price_simulation  
+    # "Quantum Simulation": quantum_price_simulation  
 }
 
 # =============================================================================
@@ -40,7 +39,7 @@ def black_scholes_price(S0, K, r, sigma, T):
     price = S0 * norm.cdf(d1) - K * np.exp(-r * T) * norm.cdf(d2)
     return price
 
-async def run_async(name, func, true_price, S0=100, K=100, r=0.05, sigma=0.2, T=1.0):
+def run(name, func, true_price, S0=100, K=100, r=0.05, sigma=0.2, T=1.0):
     method_start = time.time()
     num_runs = 10
     prices = []
@@ -58,27 +57,27 @@ async def run_async(name, func, true_price, S0=100, K=100, r=0.05, sigma=0.2, T=
     for i in range(num_runs):
         start = time.time()
 
-        # Offload the synchronous function to a thread pool.
+        # Directly call the synchronous function.
         if name == "Monte Carlo":
-            price = await asyncio.to_thread(func, S0, K, r, sigma, T, N=1000000)
+            price = func(S0, K, r, sigma, T, N=1000000)
         elif name == "Method of Lines":
-            price = await asyncio.to_thread(func, S0, K, r, sigma, T, **mol_kwargs)
+            price = func(S0, K, r, sigma, T, **mol_kwargs)
         elif name == "Finite Difference":
-            price = await asyncio.to_thread(func, S0, K, r, sigma, T, **fd_kwargs)
+            price = func(S0, K, r, sigma, T, **fd_kwargs)
         elif name == "Spectral Method":
-            price = await asyncio.to_thread(func, S0, K, r, sigma, T, **spec_kwargs)
+            price = func(S0, K, r, sigma, T, **spec_kwargs)
         elif name == "Finite Elements":
-            price = await asyncio.to_thread(func, S0, K, r, sigma, T, **fem_kwargs)
+            price = func(S0, K, r, sigma, T, **fem_kwargs)
         elif name == "Deep Ritz":
-            price = await asyncio.to_thread(func, S0, K, r, sigma, T, **deep_ritz_kwargs)
+            price = func(S0, K, r, sigma, T, **deep_ritz_kwargs)
         elif name == "DeepONet":
-            price = await asyncio.to_thread(func, S0, K, r, sigma, T, **deeponet_kwargs)
+            price = func(S0, K, r, sigma, T, **deeponet_kwargs)
         elif name == "Fourier Neural Operator":
-            price = await asyncio.to_thread(func, S0, K, r, sigma, T, **fourier_neural_operator_kwargs)
+            price = func(S0, K, r, sigma, T, **fourier_neural_operator_kwargs)
         elif name == "Quantum Simulation":
             # Simulate the quantum circuit with a normalized state vector.
             state = np.array([0.7071, 0.7071, 0.0, 0.7071])
-            price = await asyncio.to_thread(func, state, r, T, shots=100)
+            price = func(state, r, T, shots=100)
 
         end = time.time()
 
@@ -104,7 +103,6 @@ async def run_async(name, func, true_price, S0=100, K=100, r=0.05, sigma=0.2, T=
 
     method_end = time.time()
     method_runtime = method_end - method_start
-    # print(f"Total runtime for {name}: {method_runtime:.4f} seconds")
 
     # Save the statistics for the current method.
     return (name, mean_price, std_price, mean_error, std_error, mean_runtime, std_runtime)
@@ -112,7 +110,7 @@ async def run_async(name, func, true_price, S0=100, K=100, r=0.05, sigma=0.2, T=
 # =============================================================================
 # Main Benchmark Comparison with Multiple Parameter Sets
 # =============================================================================
-async def main():
+def main():
     n_sets = 100  # Number of parameter sets to generate
     np.random.seed(42)  # For reproducibility
 
@@ -131,15 +129,16 @@ async def main():
         r = r_values[i]
         sigma = sigma_values[i]
         T = T_values[i]
+        T = 1.0  # Set T to 1.0 for all runs
 
         # Compute the analytical Black–Scholes price.
         true_price = black_scholes_price(S0, K, r, sigma, T)
 
-        tasks = [run_async(name, func, true_price, S0, K, r, sigma, T) for name, func in METHODS.items()]
-        results = await asyncio.gather(*tasks)
+        # Run each method synchronously
+        for name, func in METHODS.items():
+            result = run(name, func, true_price, S0, K, r, sigma, T)
 
-        # Store results for this parameter set
-        for result in results:
+            # Store results for this parameter set
             name, mean_price, std_price, mean_error, std_error, mean_runtime, std_runtime = result
             results_list.append({
                 "S0": S0,
@@ -156,6 +155,7 @@ async def main():
                 "Mean Runtime": mean_runtime,
                 "Std Runtime": std_runtime
             })
+            print(f"{name} S0={S0:.2f}, K={K:.2f}, r={r:.2f}, sigma={sigma:.2f}, T={T:.2f} - Mean Price: {mean_price:.4f}, Std Price: {std_price:.4f}, Mean Error: {mean_error:.4f}, Std Error: {std_error:.4f}, Mean Runtime: {mean_runtime:.4f}, Std Runtime: {std_runtime:.4f}")
 
     # Convert results to a DataFrame
     df = pd.DataFrame(results_list)
@@ -166,4 +166,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
