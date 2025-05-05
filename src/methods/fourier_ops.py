@@ -211,67 +211,67 @@ def fourier_neural_operator_price(S0, K, r, sigma, T, **kwargs):
 # ---------------------------
 # Main Testing Block for FNO Solver
 # ---------------------------
-if __name__ == "__main__":
-    # Option parameters
-    S0 = 100.0
-    K = 100.0
-    r = 0.05
-    sigma = 0.2
-    T = 1.0
-
-    # Compute the analytical Black–Scholes price.
-    true_price = black_scholes_price(S0, K, r, sigma, T)
-    print("Black–Scholes closed-form price: {:.4f}".format(true_price))
-    
-    # Number of independent runs.
-    num_runs = 10
-    
-    # Lists to store results.
-    prices = []
-    errors = []
-    runtimes = []
-    
-    # Run the Fourier Neural Operator method multiple times.
-    for i in range(num_runs):
-        start_time = time.time()
-        price_fno = fourier_neural_operator_price(
-            S0, K, r, sigma, T,
-            num_samples=1000,
-            epochs=10,
-            lr=1e-3,
-            m=100,
-            modes=16,
-            width=64,
-            layers=4,
-            S_max=300
-        )
-        end_time = time.time()
-        runtime = end_time - start_time
-        
-        error = abs(price_fno - true_price)
-        
-        prices.append(price_fno)
-        errors.append(error)
-        runtimes.append(runtime)
-    
-    # Convert results to NumPy arrays for statistical analysis.
-    prices_arr = np.array(prices)
-    errors_arr = np.array(errors)
-    runtimes_arr = np.array(runtimes)
-    
-    # Compute mean and standard deviation for each metric.
-    mean_price   = np.mean(prices_arr)
-    std_price    = np.std(prices_arr)
-    mean_error   = np.mean(errors_arr)
-    std_error    = np.std(errors_arr)
-    mean_runtime = np.mean(runtimes_arr)
-    std_runtime  = np.std(runtimes_arr)
-    
-    # Print aggregated results.
-    print("\nFourier Neural Operator Results over {} runs:".format(num_runs))
-    print("Mean Predicted Price: {:.4f}".format(mean_price))
-    print("Std Predicted Price:  {:.4f}".format(std_price))
-    print("Mean Absolute Error:  {:.4f}".format(mean_error))
-    print("Std Absolute Error:   {:.4f}".format(std_error))
-    print("Mean Runtime:         {:.4f} seconds".format(mean_runtime))
-    print("Std Runtime:          {:.4f} seconds".format(std_runtime))
+# if __name__ == "__main__":
+#     # Option parameters
+#     S0 = 100.0
+#     K = 100.0
+#     r = 0.05
+#     sigma = 0.2
+#     T = 1.0
+#
+#     # Compute the analytical Black–Scholes price.
+#     true_price = black_scholes_price(S0, K, r, sigma, T)
+#     print("Black–Scholes closed-form price: {:.4f}".format(true_price))
+#
+#     # Number of independent runs.
+#     num_runs = 10
+#
+#     # Lists to store results.
+#     prices = []
+#     errors = []
+#     runtimes = []
+#
+#     # Run the Fourier Neural Operator method multiple times.
+#     for i in range(num_runs):
+#         start_time = time.time()
+#         price_fno = fourier_neural_operator_price(
+#             S0, K, r, sigma, T,
+#             num_samples=1000,
+#             epochs=10,
+#             lr=1e-3,
+#             m=100,
+#             modes=16,
+#             width=64,
+#             layers=4,
+#             S_max=300
+#         )
+#         end_time = time.time()
+#         runtime = end_time - start_time
+#
+#         error = abs(price_fno - true_price)
+#
+#         prices.append(price_fno)
+#         errors.append(error)
+#         runtimes.append(runtime)
+#
+#     # Convert results to NumPy arrays for statistical analysis.
+#     prices_arr = np.array(prices)
+#     errors_arr = np.array(errors)
+#     runtimes_arr = np.array(runtimes)
+#
+#     # Compute mean and standard deviation for each metric.
+#     mean_price   = np.mean(prices_arr)
+#     std_price    = np.std(prices_arr)
+#     mean_error   = np.mean(errors_arr)
+#     std_error    = np.std(errors_arr)
+#     mean_runtime = np.mean(runtimes_arr)
+#     std_runtime  = np.std(runtimes_arr)
+#
+#     # Print aggregated results.
+#     print("\nFourier Neural Operator Results over {} runs:".format(num_runs))
+#     print("Mean Predicted Price: {:.4f}".format(mean_price))
+#     print("Std Predicted Price:  {:.4f}".format(std_price))
+#     print("Mean Absolute Error:  {:.4f}".format(mean_error))
+#     print("Std Absolute Error:   {:.4f}".format(std_error))
+#     print("Mean Runtime:         {:.4f} seconds".format(mean_runtime))
+#     print("Std Runtime:          {:.4f} seconds".format(std_runtime))
